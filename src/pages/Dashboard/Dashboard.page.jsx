@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { Flex, Typography } from "antd";
 import { useNavigate } from "react-router";
-const { Title, Paragraph } = Typography;
+import { Ingredient } from "../../components/Ingredient/Ingredient";
+const { Title } = Typography;
 
 const Dashboard = () => {
     const [ingredients, setIngredients] = useState([]);
     const navigate = useNavigate();
 
-    if (!localStorage.getItem("accessToken")) {
-        navigate("/login");
-    }
-
     useEffect(() => {
+        if (!localStorage.getItem("accessToken")) {
+            navigate("/login");
+            return;
+        }
+
         const accessToken = localStorage.getItem("accessToken");
         fetch("http://localhost:8080/ingredients", {
             method: "GET",
@@ -20,33 +22,27 @@ const Dashboard = () => {
                 Authorization: accessToken,
             },
         })
-            .then((res) => res.json())
+            .then(async (res) => {
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(text);
+                }
+                return res.json();
+            })
             .then((data) => {
                 setIngredients(data);
-                console.log(data);
+            })
+            .catch((error) => {
+                // Optionally handle error, e.g., redirect or show message
+                console.error("Fetch error:", error.message);
             });
-    }, []);
+    }, [navigate]);
 
     return (
         <Flex vertical gap={"5px"}>
             <Title>Dashboard</Title>
             {ingredients.map((ingredient, index) => {
-                return (
-                    <Flex
-                        justify="center"
-                        align="center"
-                        key={index}
-                        style={{
-                            border: "1px solid black",
-                            borderRadius: "8px",
-                            padding: "5px",
-                        }}
-                    >
-                        <Paragraph style={{ margin: 0 }}>
-                            {ingredient.name}
-                        </Paragraph>
-                    </Flex>
-                );
+                return <Ingredient name={ingredient.name} key={index} />;
             })}
         </Flex>
     );
