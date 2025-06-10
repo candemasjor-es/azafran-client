@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Button, Flex, Input, Typography } from "antd";
 const { Title } = Typography;
 
@@ -6,9 +7,9 @@ const Login = () => {
     const [user, setUser] = useState("");
     const [password, setPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+    const navigate = useNavigate();
 
     const handleLoginButtonClick = () => {
-        console.log(user, password);
         fetch("http://localhost:8080/login/", {
             headers: {
                 "Content-type": "application/json",
@@ -21,7 +22,8 @@ const Login = () => {
                 if (res.status >= 400 && data.msg) {
                     setErrorMsg(data.msg);
                 } else {
-                    localStorage.setItem("access_token", data.accessToken);
+                    localStorage.setItem("accessToken", data.accessToken);
+                    navigate("/");
                 }
             })
             .catch((err) => {
