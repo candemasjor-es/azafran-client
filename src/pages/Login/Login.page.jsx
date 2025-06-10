@@ -10,6 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLoginButtonClick = () => {
+        console.log(user, password);
         fetch("http://localhost:8080/login/", {
             headers: {
                 "Content-type": "application/json",
@@ -19,7 +20,7 @@ const Login = () => {
         })
             .then(async (res) => {
                 const data = await res.json();
-                if (res.status >= 400 && data.msg) {
+                if (!res.ok && data.msg) {
                     setErrorMsg(data.msg);
                 } else {
                     localStorage.setItem("accessToken", data.accessToken);
