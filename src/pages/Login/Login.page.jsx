@@ -10,7 +10,6 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLoginButtonClick = () => {
-        console.log(user, password);
         fetch("http://localhost:8080/login/", {
             headers: {
                 "Content-type": "application/json",
@@ -24,7 +23,7 @@ const Login = () => {
                     setErrorMsg(data.msg);
                 } else {
                     localStorage.setItem("accessToken", data.accessToken);
-                    navigate("/");
+                    window.location.href = "/";
                 }
             })
             .catch((err) => {
